@@ -163,7 +163,7 @@ sub new {
                 $self->{cursor}     = 0;
                 $self->{current}    = {};
                 $self->{schema}     = $base->{schema};
-                $self->{dbh}        = $base->dbix;
+                $self->{dbh}        = $base->dbix();
                 $self->{dsn}        = $base->{dsn};
                 
                 # build database objects

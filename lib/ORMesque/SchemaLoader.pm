@@ -15,9 +15,9 @@ ORMesque::SchemaLoader analyzes the target database's schema and
 generates a blueprint L<Dancer::Plugin::ORMesque> uses to build objects and accessors.
 Dancer::Plugin::ORMesque currently supports the following databases.
 
-    MySQL
-    SQLite
-    PostgreSQL
+    * MySQL
+    * SQLite
+    * PostgreSQL
 
 =cut
 
