@@ -1,0 +1,10 @@
+TODO LIST
+
+1. write more join data tests
+2. test database reserve words and write tests
+<<<<<<< HEAD
+3. add paging via Data::Page
+4. explain how to access DBI, DBIx-Simple, etc (maybe use dbi() and dbix() accessors)
+=======
+3. add paging via Data::Page
+>>>>>>> b854d9bcd2d20c718aca7e48113410bb9f4a2e41
