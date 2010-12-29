@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 13, import => ['!pass'];
+use Test::More import => ['!pass'];
 use Test::Exception;
 use FindBin;
 
@@ -11,6 +11,9 @@ BEGIN {
 eval { require DBD::SQLite };
 if ($@) {
     plan skip_all => 'DBD::SQLite is required to run these tests';
+}
+else {
+    plan tests => 13;
 }
 
 my $db = ORMesque->new('dbi:SQLite:' . "$FindBin::Bin/001_database.db");
