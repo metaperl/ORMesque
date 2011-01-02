@@ -1031,6 +1031,16 @@ as its querying language, it also provides access to L<SQL::Interp> for good mea
 For an in-depth look at what you can do with these utilities, please check out
 L<DBIx::Simple::Examples>.
 
+=head2 error
+
+The error function is used to access the $DBI::errstr variable.
+
+=cut
+
+sub error {
+    return shift->dbix->error(@_);
+}
+
 =head2 query
 
 The query function provides a simplified interface to DBI, Perl's powerful

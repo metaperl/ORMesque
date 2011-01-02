@@ -112,7 +112,10 @@
 	    # Conditional, because destruction order is not guaranteed
 	    # during global destruction.
 	    # $self->{dbh}->disconnect() if defined $self->{dbh};
-	    eval { $self->{dbh}->disconnect() if defined $self->{dbh} };
+	    
+	    # this thing seem to be breaking lots of shit and I don't know why,
+	    # also I'd argue whether its even neccessary :\ so im commenting it out
+	    # eval { $self->{dbh}->disconnect() if defined $self->{dbh} };
 	}
     
 	_swap(
