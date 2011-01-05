@@ -17,33 +17,40 @@ BEGIN {
     use_ok 'ORMesque';
 }
 
+my ($cd, $db);
+
+# START
 # standard error handling
-my $db = ORMesque->new('dbi:SQLite:' . "$FindBin::Bin/001_database.db", "", "", {
+$db = ORMesque->new('dbi:SQLite:' . "$FindBin::Bin/001_database.db", "", "", {
+    RaiseError => 0,
+    PrintError => 1,
+});
+
+$cd = $db->cd;
+
+eval {$cd->create({})};
+ok $@, 'yup, always dies when called with no input';
+
+eval {$cd->create({ blah => 'blah' })};
+ok !$@, 'no die when raiseerror (dieness) is 0 and printerror (raise) is 1';
+
+ok $cd->error, 'nice error was registered tho - (' . $cd->error . ')';
+ok $db->error, 'main class error was registered also - (' . $db->error . ')';
+
+# AGAIN
+# quite no error handling
+$db = ORMesque->new('dbi:SQLite:' . "$FindBin::Bin/001_database.db", "", "", {
     RaiseError => 0,
     PrintError => 0,
 });
 
-eval {$db->cd->create({})};
-ok $@, 'yup, always dies when called with no input';
-eval {$db->cd->create({ blah => 'blah' })};
-ok !$@, 'no die when raiseerror is 0';
-ok $db->cd->error, 'nice error was registered tho';
+$cd = $db->cd;
 
-$db = ORMesque->new('dbi:SQLite:' . "$FindBin::Bin/001_database.db", "", "", {
-    RaiseError => 1,
-    PrintError => 0,
-});
+eval {$cd->create({})};
+ok $@, 'mandatory no input die';
 
-eval {$db->cd->create({ blah => 'blah' })};
-ok $@, 'die exists raiseerror is 1';
-ok $db->cd->error, 'nice error was registered too tho';
+eval {$cd->create({ blah => 'blah' })};
+ok !$@, 'no die when raiseerror (dieness) is 0 and printerror (raise) is 0';
 
-$db = ORMesque->new('dbi:SQLite:' . "$FindBin::Bin/001_database.db", "", "", {
-    RaiseError => 1,
-    PrintError => 1,
-});
-
-eval {$db->cd->create({ blah => 'blah' })};
-ok $@, 'die when printerror and raiseerror is 1';
-ok $db->cd->error, 'nice error was registered tho';
-
+ok $cd->error, 'no nice error was registered which is good - (' . $cd->error . ')';
+ok $db->error, 'main class error is non-exist also - (' . $db->error . ')';

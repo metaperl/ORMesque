@@ -1038,7 +1038,7 @@ The error function is used to access the $DBI::errstr variable.
 =cut
 
 sub error {
-    return shift->dbix->error(@_);
+    return shift->{dbh}->error(@_);
 }
 
 =head2 query
