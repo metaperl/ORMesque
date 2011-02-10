@@ -23,7 +23,7 @@ my ($cd, $db);
 # standard error handling
 $db = ORMesque->new('dbi:SQLite:' . "$FindBin::Bin/001_database.db", "", "", {
     RaiseError => 0,
-    PrintError => 1,
+    PrintError => 0,
 });
 
 $cd = $db->cd;
