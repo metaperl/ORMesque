@@ -70,23 +70,23 @@ SYNOPSIS
         which uses the datasource configuration details in your configuration file
         to create database objects and accessors.
     
-        my $db = dbi;
+        my $db = ORMesque->new(...);
 
   reset
         Once the dbi() keyword analyzes the specified database, the schema is cached
         to for speed and performance. Occassionally you may want to re-read the
         database schema.
     
-        dbi->reset;
-        my $db = dbi;
+        $db->reset;
+        my $db = ORMesque->new(...);
 
   next
         The next method instructs the database object to continue to the next
         row if it exists.
     
-        dbi->table->next;
+        $db->table->next;
     
-        while (dbi->table->next) {
+        while ($db->table->next) {
             ...
         }
 
@@ -94,43 +94,43 @@ SYNOPSIS
         The first method instructs the database object to continue to return the first
         row in the resultset.
     
-        dbi->table->first;
+        $db->table->first;
 
   last
         The last method instructs the database object to continue to return the last
         row in the resultset.
     
-        dbi->table->last;
+        $db->table->last;
 
   collection
         The collection method return the raw resultset object.
     
-        dbi->table->collection;
+        $db->table->collection;
 
   current
         The current method return the raw row resultset object of the position in
         the resultset collection.
     
-        dbi->table->current;
+        $db->table->current;
 
   clear
         The clear method empties all resultset containers. This method should be used
         when your ready to perform another operation (start over) without initializing
         a new object.
     
-        dbi->table->clear;
+        $db->table->clear;
 
   key
         The key method finds the database objects primary key if its defined.
     
-        dbi->table->key;
+        $db->table->key;
 
   select
         The select method defines specific columns to be used in the generated
         SQL query. This useful for database tables that have lots of columns
         where only a few are actually needed.
     
-        my $table = dbi->select('foo', 'bar')->read();
+        my $table = $db->select('foo', 'bar')->read();
 
   return
         The return method queries the database for the last created object(s).
@@ -139,7 +139,7 @@ SYNOPSIS
         function, you should not use it that way unless you know exactly what
         this method does and what your database will return.
     
-        my $new_record = dbi->table->create(...)->return();
+        my $new_record = $db->table->create(...)->return();
 
   count
         The count method returns the number of items in the resultset of the
@@ -147,7 +147,7 @@ SYNOPSIS
         will need to call read() before calling count() to get an accurate
         count as count() operates on the current collection.
     
-        my $count = dbi->table->read->count;
+        my $count = $db->table->read->count;
 
   create
         Caveat 1: The create method will remove the primary key if the column
@@ -156,12 +156,12 @@ SYNOPSIS
         The create method creates a new entry in the datastore.
         takes 1 arg: hashref (SQL::Abstract fields parameter)
     
-        dbi->table->create({
+        $db->table->create({
             'column_a' => 'value_a',
         });
     
         # create a copy of an existing record
-        my $user = dbi->users;
+        my $user = $db->users;
         $user->read;
         $user->full_name_column('Copy of ' . $user->full_name);
         $user->user_name_column('foobarbaz');
@@ -180,21 +180,21 @@ SYNOPSIS
         arg 1: hashref (SQL::Abstract where parameter) or scalar
         arg 2: arrayref (SQL::Abstract order parameter) - optional
     
-        dbi->table->read({
+        $db->table->read({
             'column_a' => 'value_a',
         });
     
         .. or read by primary key ..
     
-        dbi->table->read(1);
+        $db->table->read(1);
     
         .. or read and limit the resultset ..
     
-        dbi->table->read({ 'column_a' => 'value_a' }, ['orderby_column_a'], $limit, $offset);
+        $db->table->read({ 'column_a' => 'value_a' }, ['orderby_column_a'], $limit, $offset);
     
         .. or return a paged resultset ..
     
-        dbi->table->page(1, 25)->read;
+        $db->table->page(1, 25)->read;
 
   update
         The update method alters an existing record in the datastore.
@@ -203,7 +203,7 @@ SYNOPSIS
         arg 1: hashref (SQL::Abstract fields parameter)
         arg 2: arrayref (SQL::Abstract where parameter) or scalar - optional
     
-        dbi->table->update({
+        $db->table->update({
             'column_a' => 'value_a',
         },{
             'where_column_a' => '...'
@@ -211,7 +211,7 @@ SYNOPSIS
     
         or
     
-        dbi->table->update({
+        $db->table->update({
             'column_a' => 'value_a',
         }, 1);
 
@@ -220,18 +220,18 @@ SYNOPSIS
         thus requires a where clause. If you intentionally desire to empty the entire
         database then you may use the delete_all method.
     
-        dbi->table->delete({
+        $db->table->delete({
             'column_a' => 'value_a',
         });
     
         or
     
-        dbi->table->delete(1);
+        $db->table->delete(1);
 
   delete_all
         The delete_all method is use to intentionally empty the entire database table.
     
-        dbi->table->delete_all;
+        $db->table->delete_all;
 
   join
     If you have used ORMesque with a project of any sophistication you will
@@ -245,7 +245,7 @@ SYNOPSIS
     be called after the desired resultsets have be gathered. The join method
     is merely an aggregator of result sets.
 
-        my ($cd, $artist) = (dbi->cd, dbi->artist);
+        my ($cd, $artist) = ($db->cd, $db->artist);
 
         $artist->read({ id => $aid });
         $cd->read({ artist => $aid });
@@ -313,13 +313,13 @@ SYNOPSIS
         my $page = 1; # page of data to be returned
         my $rows = 100; # number of rows to return
     
-        dbi->table->page($page, $rows)->read;
+        $db->table->page($page, $rows)->read;
 
   pager
         The pager method provides access to the Data::Page object used in pagination.
         Please see L<Data::Page> for more details...
     
-        $pager = dbi->table->pager;
+        $pager = $db->table->pager;
     
         $pager->first_page;
         $pager->last_page;
@@ -338,39 +338,39 @@ RESULTSET METHODS
   into
         Binds the columns returned from the query to variable(s)
     
-        dbi->table->read(1)->into(my ($foo, $bar));
+        $db->table->read(1)->into(my ($foo, $bar));
 
   list
         Fetches a single row and returns a list of values. In scalar context,
         returns only the last value.
     
-        my @values = dbi->table->read(1)->list;
+        my @values = $db->table->read(1)->list;
 
   array
         Fetches a single row and returns an array reference.
     
-        my $row = dbi->table->read(1)->array;
+        my $row = $db->table->read(1)->array;
         print $row->[0];
 
   hash
         Fetches a single row and returns a hash reference.
         Keys are lower cased if lc_columns was true when the query was executed.
     
-        my $row = dbi->table->read(1)->hash;
+        my $row = $db->table->read(1)->hash;
         print $row->{id};
 
   flat
         Fetches all remaining rows and returns a flattened list.
         In scalar context, returns an array reference.
     
-        my @records = dbi->table->read(1)->flat;
+        my @records = $db->table->read(1)->flat;
         print $records[0];
 
   arrays
         Fetches all remaining rows and returns a list of array references.
         In scalar context, returns an array reference.
     
-        my $rows = dbi->table->read(1)->arrays;
+        my $rows = $db->table->read(1)->arrays;
         print $rows->[0];
 
   hashes
@@ -378,7 +378,7 @@ RESULTSET METHODS
         In scalar context, returns an array reference.
         Keys are lower cased if lc_columns was true when the query was executed.
     
-        my $rows = dbi->table->read(1)->hashes;
+        my $rows = $db->table->read(1)->hashes;
         print $rows->[0]->{id};
 
   map_hashes
@@ -386,7 +386,7 @@ RESULTSET METHODS
         In scalar context, returns a hash reference.
         In list context, returns interleaved keys and values.
     
-        my $customer = dbi->table->read->map_hashes('id');
+        my $customer = $db->table->read->map_hashes('id');
         # $customers = { $id => { name => $name, location => $location } }
 
   map_arrays
@@ -394,7 +394,7 @@ RESULTSET METHODS
         In scalar context, returns a hash reference.
         In list context, returns interleaved keys and values.
     
-        my $customer = dbi->table->read->map_arrays(0);
+        my $customer = $db->table->read->map_arrays(0);
         # $customers = { $id => [ $name, $location ] }
 
   rows
@@ -404,7 +404,7 @@ RESULTSET METHODS
         rows are returned. MySQL does provide this information. See DBI for a
         detailed explanation.
     
-        my $changes = dbi->table->insert(dbi->table->current)->rows;
+        my $changes = $db->table->insert($db->table->current)->rows;
 
 UTILITIES
     ORMesque has as its sub-classes DBIx::Simple and SQL::Abstract as its
