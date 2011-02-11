@@ -54,7 +54,8 @@ my  (
         $db->playlist_track
     );
 
-$artist->create({ name => 'Micheal Jackson' })->return;
+$artist->create({ name => 'Micheal Jackson' });
+$artist->return;
 $cd->create({ artist => $artist->id(), name => $_ })
 
     for (

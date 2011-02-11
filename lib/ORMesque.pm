@@ -320,9 +320,11 @@ sub reset {
 
 sub next {
     my $dbo = shift;
-
+    
+    $dbo->{collection} ||= [];
+    
     my $next =
-      $dbo->{cursor} <= (scalar(@{$dbo->{collection}}) - 1) ? $dbo : undef;
+    $dbo->{cursor} <= (scalar(@{$dbo->{collection}}) - 1) ? $dbo : undef;
     $dbo->{current} = $dbo->{collection}->[$dbo->{cursor}] || {};
     $dbo->{cursor}++;
 
@@ -457,12 +459,14 @@ sub select {
     function, you should not use it that way unless you know exactly what
     this method does and what your database will return.
     
-    my $new = ORMesque->new(...)->table->create(...)->return();
+    my $new = ORMesque->new(...)->table;
+    $new->create(...);
+    $new->return();
     $new->column
     
     ..or..
     
-    my $rec = $new->current;
+    my $rec = $new->current; # current row
 
 =cut
 
@@ -529,7 +533,7 @@ sub create {
       unless keys %{$input};
 
     # add where clause to current for
-    # $dbo->create(..)->return operations
+    # $dbo->create(..); $dbo->return; operations
     if ($input) {
         foreach my $i (keys %{$input}) {
             if (defined $dbo->{current}->{$i}) {
@@ -542,7 +546,7 @@ sub create {
     $dbo->dbix
       ->insert($dbo->_protect_sql($dbo->{table}), $dbo->_protect_sql($input));
 
-    return $dbo;
+    return $dbo->error ? 0 : 1;
 }
 
 =head2 read
@@ -660,7 +664,7 @@ sub read {
     $dbo->{cursor} = 0;
     $dbo->next;
 
-    return $dbo;
+    return $dbo->error ? 0 : $dbo;
 }
 
 =head2 update
@@ -708,7 +712,7 @@ sub update {
         $dbo->_protect_sql($where)
     ) if keys %{$input};
 
-    return $dbo;
+    return $dbo->error ? 0 : 1;
 }
 
 =head2 delete
@@ -745,7 +749,7 @@ sub delete {
     $dbo->dbix
       ->delete($dbo->_protect_sql($table), $dbo->_protect_sql($where));
 
-    return $dbo;
+    return $dbo->error ? 0 : 1;
 }
 
 =head2 delete_all
@@ -762,7 +766,7 @@ sub delete_all {
 
     $dbo->dbix->delete($dbo->_protect_sql($table));
 
-    return $dbo;
+    return $dbo->error ? 0 : 1;
 }
 
 =head2 join
@@ -1121,7 +1125,11 @@ The error function is used to access the $DBI::errstr variable.
 =cut
 
 sub error {
-    return shift->{dbh}->error(@_);
+    my $dbo = shift;
+    my $err = $dbo->{dbh}->error(@_);
+       $err =~ s/^DBI error\:\s+//;
+       $err =~ s/\n+/\, /g;
+    return $err;
 }
 
 =head2 query
