@@ -97,7 +97,6 @@ methods. The following is an example of how this should be done using ORMesque.
     # Schema Table Classes are CamelCased for convention, all class names are
     # lowercase, capitalized, and have dashed and underscores removed.
     # for example ...
-    
     # table 'user_workplace' would generate a class named 'UserWorkspace'
     
     # with no special characters. If package name is one of the auto-generated
@@ -181,16 +180,17 @@ sub new {
 
         my $class        = $self->namespace;
         my $method       = $class . "::" . lc $table;
+        my $classtable   = $table;
            
-           if ($table =~ /[\-\_]/) {
-                $table = join '', map { ucfirst lc $_ }
-                    split /[\-\_]/, $table;
+           if ($classtable =~ /[\-\_]/) {
+                $classtable = join '', map { ucfirst lc $_ }
+                    split /[\-\_]/, $classtable;
            }
            else {
-                $table = ucfirst lc $table;
+                $classtable = ucfirst lc $classtable;
            }
         
-        my $package_name = $class . "::" . $table;
+        my $package_name = $class . "::" . $classtable;
         my $package      = "package $package_name;" . q|
             
             use base '| . $class . q|';
