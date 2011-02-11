@@ -92,7 +92,14 @@ methods. The following is an example of how this should be done using ORMesque.
     package MyApp::Model::Cd;
     use base 'MyApp::Model';
     # create your table specific Model - lib/MyApp/Model/Cd.pm
-    # note the model should be named after the table, all lowercase, capitalized,
+    # note the model should be named after the table, the naming is as follows:
+    
+    # Schema Table Classes are CamelCased for convention, all class names are
+    # lowercase, capitalized, and have dashed and underscores removed.
+    # for example ...
+    
+    # table 'user_workplace' would generate a class named 'UserWorkspace'
+    
     # with no special characters. If package name is one of the auto-generated
     # classes, all relevant methods and settings will be set automatically.
     
@@ -174,7 +181,16 @@ sub new {
 
         my $class        = $self->namespace;
         my $method       = $class . "::" . lc $table;
-        my $package_name = $class . "::" . ucfirst $table;
+           
+           if ($table =~ /[\-\_]/) {
+                $table = join '', map { ucfirst lc $_ }
+                    split /[\-\_]/, $table;
+           }
+           else {
+                $table = ucfirst lc $table;
+           }
+        
+        my $package_name = $class . "::" . $table;
         my $package      = "package $package_name;" . q|
             
             use base '| . $class . q|';
