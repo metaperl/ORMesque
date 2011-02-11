@@ -109,16 +109,6 @@ methods. The following is an example of how this should be done using ORMesque.
     
 =cut
 
-=head2 dbi
-
-    The dbi method/keyword instantiates a new ORMesque instance
-    which uses the datasource configuration details in your configuration file
-    to create database objects and accessors.
-    
-    my $db = dbi;
-
-=cut
-
 sub new {
     my $class = shift;
 
@@ -243,19 +233,42 @@ sub new {
 }
 
 sub _protect_sql {
-    my $dbo = shift;
+    my ($dbo, @sql) = @_;
+    
     return @_ unless $dbo->{schema}->{escape_string};
+    
+    # set field delimiters
     my ($stag, $etag) =
       length($dbo->{schema}->{escape_string}) == 1
       ? ($dbo->{schema}->{escape_string}, $dbo->{schema}->{escape_string})
       : split //, $dbo->{schema}->{escape_string};
+      
+    my $params = {};
 
-    if ("HASH" eq ref $_[0]) {
-        return {map { ("$stag$_$etag" => $_[0]->{$_}) } keys %{$_[0]}};
+    if ("HASH" eq ref $sql[0]) {
+        $params = {
+            map {
+                if ($_ =~ /[^a-zA-Z\_0-9\s]/) {
+                    ( $_ => $sql[0]->{$_} )
+                }
+                else {
+                    ( "$stag$_$etag" => $sql[0]->{$_} )
+                }
+            }   keys %{$sql[0]}
+        };
     }
     else {
-        return map {"$stag$_$etag"} @_;
+        $params = [ map {
+            if ($_ =~ /[^a-zA-Z\_0-9\s]/) {
+                ($_)
+            }
+            else {
+                "$stag$_$etag"
+            }
+        }   @sql ];
     }
+    
+    return "ARRAY" eq ref $params ? @{ $params } : $params;
 }
 
 =head2 namespace
