@@ -268,7 +268,7 @@ sub _protect_sql {
         }   @sql ];
     }
     
-    return "ARRAY" eq ref $params ? @{ $params } : $params;
+    return "ARRAY" eq ref $params ? ( @{ $params } ) : $params;
 }
 
 =head2 namespace
@@ -488,13 +488,30 @@ sub return {
     will need to call read() before calling count() to get an accurate
     count as count() operates on the current collection.
     
-    my $count = ORMesque->new(...)->table->read->count;
+    my $db = ORMesque->new(...)->table;
+    my $count = $db->read->count;
+    
+    Note! The count() method DOES NOT query the database, it merely counts
+    the number of items in the existing resultset. Alternatively to perform a
+    count-type-of query you can use the count($where) syntax:
+    
+    my $db = ORMesque->new(...)->table;
+    my $count = $db->count({ id => 12345});
 
 =cut
 
 sub count {
     my $dbo = shift;
-    return scalar @{$dbo->{collection}};
+    my $whr = shift;
+    
+    if (defined $whr) {
+        my @columns = $dbo->_protect_sql($dbo->key || '*');
+        my $counter = 'COUNT('. $columns[0] .')';
+        return scalar @{$dbo->select($counter)->read($whr)->{collection}};
+    }
+    else {
+        return scalar @{$dbo->{collection}};
+    }
 }
 
 =head2 create

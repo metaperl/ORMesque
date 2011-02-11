@@ -11,7 +11,7 @@ BEGIN {
         plan skip_all => 'DBD::SQLite is required to run these tests';
     }
     else {
-        plan tests => 56;
+        plan tests => 57;
     }    
     use_ok 'ORMesque';
 }
@@ -82,6 +82,6 @@ ok $user->name('Johnny'), 'preparing the new person';
 ok !$user->age(undef), 'he hasnt been born yet';
 ok $user->create($user->current), 'he was just inserted :)';
 ok $user->return, 'he was born successfully';
-
+ok $user->count({}), "users founds using toplevel count func";
 
 # warn to_dumper $user->return;
