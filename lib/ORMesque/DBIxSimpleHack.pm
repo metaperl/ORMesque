@@ -180,7 +180,7 @@
     
     sub error {
 	my ($self) = @_;
-	return 'DBI error: ' . (ref $self ? $self->{dbh}->errstr : $DBI::errstr);
+	return join (' ', 'DBI error:', (ref $self ? $self->{dbh}->errstr : $DBI::errstr));
     }
     
     sub dbh            { $_[0]->{dbh}             }
