@@ -273,12 +273,14 @@ sub _protect_sql {
 
 =head2 namespace
 
-    The namespace() method returns the class naming scheme (if specified with
-    *new*), being used used when database table classes are created. 
+    The namespace() method returns the classname being used in the auto-generated
+    database table classes. 
     
-    my $db = ORMesque->new(...);
+    my $a = ORMesque->new(...);
+    my $b = ThisApp->new(...);
     
-    $db->namespace;
+    $a->namespace; # ORMesque
+    $b->namespace; # ThisApp
 
 =cut
 
