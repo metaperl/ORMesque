@@ -95,9 +95,9 @@ methods. The following is an example of how this should be done using ORMesque.
     # note the model should be named after the table, the naming is as follows:
     
     # Schema Table Classes are CamelCased for convention, all class names are
-    # lowercase, capitalized, and have dashed and underscores removed.
-    # for example ...
-    # table 'user_workplace' would generate a class named 'UserWorkspace'
+    # titlecased, and have dashed and underscores removed.
+    
+    # e.g. table 'user_workplace' would generate a class named 'UserWorkspace'
     
     # with no special characters. If package name is one of the auto-generated
     # classes, all relevant methods and settings will be set automatically.
@@ -508,11 +508,13 @@ sub return {
     my $count = $db->read->count;
     
     Note! The count() method DOES NOT query the database, it merely counts
-    the number of items in the existing resultset. Alternatively to perform a
-    count-type-of query you can use the count($where) syntax:
+    the number of items in the existing resultset produced by read().
+    Alternatively, to perform a type-of SQL COUNT() query you can use the
+    count($where) syntax:
     
     my $db = ORMesque->new(...)->table;
     my $count = $db->count({ id => 12345});
+    # notice there is no read() command
 
 =cut
 
@@ -523,11 +525,11 @@ sub count {
     if (defined $whr) {
         my @columns = $dbo->_protect_sql($dbo->key || '*');
         my $counter = 'COUNT('. $columns[0] .')';
-        return scalar @{$dbo->select($counter)->read($whr)->{collection}};
+        $dbo->select($counter)->read($whr);
+        return scalar $dbo->list;
     }
-    else {
-        return scalar @{$dbo->{collection}};
-    }
+    
+    return scalar @{$dbo->{collection}};
 }
 
 =head2 create
