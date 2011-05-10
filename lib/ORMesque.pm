@@ -811,15 +811,16 @@ sub delete_all {
 
 =head2 join
 
-If you have used ORMesque with a project of any sophistication
-you will have undoubtedly noticed that the is no mechanism for specifying joins
-and this is intentional. ORMesque is an ORM, and object relational
-mapper and that is its purpose, it is not a SQL substitute. Joins are neccessary
-in SQL as they are the only means of gathering related data. Such is not the case
-with Perl code, however, even in code the need to join related datasets exists and
-that is the need we address. The join method "Does Not Execute Any SQL", in-fact
-the join method is meant to be called after the desired resultsets have be gathered.
-The join method is merely an aggregator of result sets.
+Joining data is a programmatic necessity, but since all popular
+databases support views, ORMesque itself has no mechanism for
+specifying joins and this is intentional: ORMesque is an ORM, an 
+object-relational mapper and that is its purpose, it is 
+not a SQL substitute. 
+
+For high-performance joins, database views are suggested. The ORMesque
+join method "Does Not Execute Any SQL", in-fact the join method 
+is meant to be called after the desired resultsets have be gathered. 
+It is merely an aggregator of result sets.
 
     my ($cd, $artist) = (ORMesque->new(...)->cd, ORMesque->new(...)->artist);
 
